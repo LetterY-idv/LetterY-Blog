@@ -1,8 +1,15 @@
 {
-	"name": "firefly",
-	"compatibility_date": "2025-01-01",
+	"name": "lettery-blog",
+	"compatibility_date": "2021-08-14",
 	"compatibility_flags": ["nodejs_compat"],
 	"assets": {
 		"directory": "./dist"
-	}
+	},
+	"observability": {
+    	"logs": {
+    	  "enabled": true,
+    	  "invocation_logs": true,
+    	  "persist": true
+    	}
+  	}
 }
