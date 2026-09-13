@@ -51,7 +51,8 @@ export const musicPlayerConfig: MusicPlayerConfig = {
 				name: "皎洁的笑颜 Moonlike Smile",
 				artist: "陈致逸,HOYO-MiX",
 				url: "/assets/music/陈致逸,HOYO-MiX - Moonlike Smile 皎洁的笑颜.flac",
-				cover: "https://p1.music.126.net/_U__1_DT6eLbvObNtK3apg==/109951165849462124.jpg",
+				cover:
+					"https://p1.music.126.net/_U__1_DT6eLbvObNtK3apg==/109951165849462124.jpg",
 				lrc: "",
 			},
 		],
