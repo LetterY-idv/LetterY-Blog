@@ -354,7 +354,9 @@ export default defineConfig({
 		plugins: [tailwindcss()],
 		server: {
 			watch: {
-				ignored: ["**/package/**", "**/Firefly-docs/**"],
+				ignored: [/[/\\]package([/\\]|$)/i, /[/\\]Firefly-Docs([/\\]|$)/i],
+				usePolling: true,	// 解决 win32 下的文件监听问题，在Linux下可以删除以优化性能
+				interval: 1000,		// 轮询间隔，单位为毫秒
 			},
 		},
 		resolve: {

@@ -68,7 +68,7 @@ export const siteConfig: SiteConfig = {
 	// 主题色
 	themeColor: {
 		// 主题色的默认色相，范围从 0 到 360。例如：红色：0，青色：200，蓝绿色：250，粉色：345
-		hue: 165,
+		hue: 250,
 		// 默认模式："light" 亮色，"dark" 暗色，"system" 跟随系统
 		defaultMode: "system",
 	},
@@ -81,7 +81,7 @@ export const siteConfig: SiteConfig = {
 	// 网站Card样式配置
 	card: {
 		// 是否开启卡片边框和阴影，开启后让网站更有立体感
-		border: false,
+		border: true,
 		// 是否让卡片风格跟随主题色相
 		followTheme: true,
 	},
@@ -155,7 +155,7 @@ export const siteConfig: SiteConfig = {
 	tagStyle: "pill",
 
 	// 归档页是否折叠非最新年份文章，禁用后默认展开全部年份
-	foldArticle: true,
+	foldArticle: false,
 
 	// ── 文章列表布局配置 ──────────────────────────────────
 	postListLayout: {
@@ -187,7 +187,7 @@ export const siteConfig: SiteConfig = {
 			// 是否显示标签
 			showTags: true,
 			// 标签数量，设为 0 则不限制
-			tagCount: 3,
+			tagCount: 0,
 			// 是否显示字数
 			showWords: true,
 			// 是否显示阅读时间
