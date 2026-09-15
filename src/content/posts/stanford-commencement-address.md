@@ -2,7 +2,7 @@
 title: Steve Jobs' 2005 Stanford Commencement Address
 published: 2024-06-07
 description: 'Stanford Commencement Address of Steve Jobs in 2005'
-image: 'https://news.stanford.edu/__data/assets/image/0028/165169/050609-228.jpg'
+image: './images/steve-jobs.jpg'
 tags: [Transcripts, Speech Script]
 category: '转载'
 draft: false
