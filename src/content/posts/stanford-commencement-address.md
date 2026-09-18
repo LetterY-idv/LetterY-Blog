@@ -1,5 +1,5 @@
 ---
-title: Steve Jobs' 2005 Stanford Commencement Address
+title: "Steve Jobs' 2005 Stanford Commencement Address"
 published: 2024-06-07
 description: 'Stanford Commencement Address of Steve Jobs in 2005'
 image: './images/steve-jobs.jpg'
