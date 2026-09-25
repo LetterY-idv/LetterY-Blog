@@ -6,7 +6,7 @@ image: './images/mpv-screenshot.png'
 tags: []
 status: 'published'
 draft: false
-lang: ''
+lang: 'en-US'
 slug: mpvscrobbler-win
 link:
   - label: "GitHub"

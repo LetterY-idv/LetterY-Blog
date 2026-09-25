@@ -40,8 +40,8 @@ export function isWidgetVisibleOnPageType(
  * 获取响应式侧边栏配置
  *
  * 响应式布局：
- * - 768px及以下: 隐藏侧栏，显示底部 mobileBottomComponents
- * - 769px-1279px: 根据 position 和 tabletSidebar 配置显示侧栏
+ * - 839px及以下: 隐藏侧栏，显示底部 mobileBottomComponents
+ * - 840px-1279px: 根据 position 和 tabletSidebar 配置显示侧栏
  * - 1280px及以上: 根据 position 配置显示侧栏
  */
 export function getResponsiveSidebarConfig(): ResponsiveSidebarConfig {

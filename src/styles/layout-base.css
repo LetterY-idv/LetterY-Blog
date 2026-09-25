@@ -15,7 +15,7 @@
     grid-template-columns: 1fr;
     grid-template-rows: auto;
   }
-  /* <768px：侧栏一律不参与布局，改由 #mobile-bottom-sidebar 承担 */
+  /* <840px：侧栏一律不参与布局，改由 #mobile-bottom-sidebar 承担 */
   #main-grid > #left-sidebar-wrapper,
   #main-grid > #left-sidebar-dynamic,
   #main-grid > #right-sidebar-static,
@@ -23,7 +23,7 @@
     display: none;
   }
 
-  @media (min-width: 768px) {
+  @media (min-width: 840px) {
     #main-grid {
       grid-template-columns: var(--cols-md, 1fr);
     }
@@ -72,7 +72,7 @@
     width: calc(100% - 1rem);
     margin-inline: auto;
   }
-  @media (min-width: 768px) {
+  @media (min-width: 840px) {
     #content-panel-inner > .site-footer {
       width: calc(100% - 2rem);
     }

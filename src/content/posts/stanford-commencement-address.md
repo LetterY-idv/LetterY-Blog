@@ -6,7 +6,7 @@ image: './images/steve-jobs.jpg'
 tags: [Transcripts, Speech Script]
 category: '转载'
 draft: false
-lang: ''
+lang: 'en-US'
 slug: stanford-commencement-address
 ---
 
