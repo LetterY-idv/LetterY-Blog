@@ -40,16 +40,17 @@ jobs:
           test -d "$source_dir"
           rsync -a --delete "$source_dir/" src/content/posts/
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v6
+        with:
+          version: 12.8.2
+          run_install: false
+
       - name: Setup Node.js
         uses: actions/setup-node@v7
         with:
           node-version: '24'
           cache: pnpm
-
-      - name: Setup pnpm
-        uses: pnpm/action-setup@v6
-        with:
-          run_install: false
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
