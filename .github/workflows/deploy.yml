@@ -25,25 +25,6 @@ jobs:
       - name: Checkout site
         uses: actions/checkout@v7
 
-      - name: Checkout private content
-        if: ${{ vars.PRIVATE_CONTENT_REPOSITORY != '' }}
-        uses: actions/checkout@v7
-        with:
-          repository: ${{ vars.PRIVATE_CONTENT_REPOSITORY }}
-          ref: ${{ vars.PRIVATE_CONTENT_REF || 'master' }}
-          token: ${{ secrets.PRIVATE_CONTENT_TOKEN }}
-          path: private-content
-
-      - name: Merge private content
-        if: ${{ vars.PRIVATE_CONTENT_REPOSITORY != '' }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          source_dir="private-content/${{ vars.PRIVATE_CONTENT_PATH || 'posts' }}"
-          test -d "$source_dir"
-          rsync -a "$source_dir/" src/content/posts/
-        # 合并私有文章，但保留博客仓库中原有的公开文章
-
       - name: Setup pnpm
         uses: pnpm/action-setup@v6
         with:
@@ -64,6 +45,11 @@ jobs:
 
       - name: Build site
         run: pnpm run build
+        env:
+          PRIVATE_CONTENT_REPOSITORY: ${{ vars.PRIVATE_CONTENT_REPOSITORY }}
+          PRIVATE_CONTENT_REF: ${{ vars.PRIVATE_CONTENT_REF }}
+          PRIVATE_CONTENT_PATH: ${{ vars.PRIVATE_CONTENT_PATH }}
+          PRIVATE_CONTENT_TOKEN: ${{ secrets.PRIVATE_CONTENT_TOKEN }}
 
       - name: Create .nojekyll file
         run: touch dist/.nojekyll
