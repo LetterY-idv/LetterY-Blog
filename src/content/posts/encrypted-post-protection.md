@@ -9,6 +9,7 @@ tags:
   - EdgeOne
   - CI/CD
   - 安全
+image: 'https://astro.build/assets/press/astro-logo-dark.png'
 category: '技术'
 slug: encrypted-post-protection
 ---
