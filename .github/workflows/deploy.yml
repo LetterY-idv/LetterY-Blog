@@ -3,8 +3,6 @@ name: Deploy to GitHub Pages
 on:
   push:
     branches: [ master ] # Adjust branches as needed
-  pull_request:
-    branches: [ master ] # Adjust branches as needed
   repository_dispatch:
     types: [content-updated]
   workflow_dispatch:
