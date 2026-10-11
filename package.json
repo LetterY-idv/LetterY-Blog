@@ -5,7 +5,7 @@
   "engines": {
     "node": ">=24.20.0"
   },
-  "packageManager": "pnpm@12.8.2+sha512.a5941679663d952c5f0ecc38ba98af98b4dc01b95780354f6894f2f873973cef2f7e2989d7db3ee5393938ae21f62fe06bcdf685d475ddad829a62095d2b8b11",
+  "packageManager": "pnpm@12.12.0+sha512.2ee06ac86db554cf384421461220f0e336a487bfd41b2acd04e17a86b1487832fe45e8d1743f7fc52acc77de12d2356b536fedf8229fc483239e40b13d474449",
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
