@@ -52,7 +52,7 @@ export const siteConfig: SiteConfig = {
 
 	// 站点描述
 	description:
-		"言以寓情，文以载道。这里是 LetterY（言信）海外信息站点之一，博客由 Hurt Luis (SummerRX) 维护，致力于记录有趣的灵魂和有用的知识，希望可以帮到你。",
+		"言以寓情，文以载道。欢迎来到 LetterY（言信）的文章站点，这里致力于记录有趣的灵魂和有用的知识，希望可以帮到你。",
 
 	// 站点关键词
 	keywords: [
@@ -91,7 +91,7 @@ export const siteConfig: SiteConfig = {
 	favicon: [
 		{
 			// 图标文件路径
-			src: "/favicon/lettery.png",
+			src: "/favicon/lettery-32.png",
 			// 可选，指定主题 'light' | 'dark'
 			// theme: "light",
 			// 可选，图标大小
@@ -112,8 +112,8 @@ export const siteConfig: SiteConfig = {
 		// 使用 Astro 图标库时不需要设置 valueDark，图标会自动跟随主题亮暗色切换
 		logo: {
 			type: "image",
-			value: "assets/images/logo/logo.png",
-			valueDark: "assets/images/logo/logo.png",
+			value: "assets/images/logo/lettery-light.png",
+			valueDark: "assets/images/logo/lettery-dark.png",
 			alt: "✉",
 		},
 		// 导航栏标题

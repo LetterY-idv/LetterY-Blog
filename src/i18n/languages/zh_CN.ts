@@ -337,7 +337,7 @@ export const zh_CN: Translation = {
 
 	//最后编辑时间卡片
 	[Key.lastModifiedPrefix]: "最后更新于 ",
-	[Key.lastModifiedOutdated]: "部分内容可能已过时",
+	[Key.lastModifiedOutdated]: "请注意甄别内容时效性",
 	[Key.lastModifiedDaysAgo]: "距今已过 {days} 天",
 	[Key.year]: "年",
 	[Key.month]: "月",

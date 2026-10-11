@@ -2,6 +2,7 @@
 title: '使用私有仓库保护 Astro 加密文章并实现自动部署'
 description: '从仓库拆分、构建前置脚本到 GitHub Actions 通知，完整实现私有加密文章的自动获取、构建与多平台部署。'
 published: 2026-10-01
+updated: 2026-10-11
 tags:
   - Astro
   - GitHub Actions
@@ -9,18 +10,24 @@ tags:
   - EdgeOne
   - CI/CD
   - 安全
-image: 'https://astro.build/assets/press/astro-logo-dark.png'
+image: './images/astro-logo-dark.png'
 category: '技术'
 slug: encrypted-post-protection
 ---
 
-## 目标与问题
+由于 Github 上的许多静态博客框架的主题都是通过 fork 的形式使用的，而 fork 又只能是公开仓库，所以纵然你的框架有文章加密功能（比如 Astro），也能在 Github 文章仓库内找到原始内容。与此同时，fork 的上游跟踪功能又不是完全没用（虽然你可以用手动添加 git 上游的方式跟踪，但是 Github 上的 fork 上游跟踪更为直观，也更为方便。
 
-Astro 静态博客可以在构建阶段加密文章正文，并在浏览器中要求访客输入密码后解密。部署产物虽然只包含密文，但如果文章源文件和密码仍保存在公开仓库中，任何人都可以直接查看仓库并获得明文。
+## 思路
 
-本文以 Firefly 为例，你可以在本fork的提交历史中找到原始的 Github 工作流文件，当然也可以直接访问 [Firefly](https://github.com/CuteLeaf/Firefly) 找到原始工作流文件。
+加密文章正文是 Astro 在构建阶段完成的，在浏览器中纯前端解密。部署产物虽然只包含密文，但如果文章源文件和密码仍保存在公开仓库中，任何人都可以直接查看仓库并获得明文。
 
-本教程将实现以下目标：
+所以，只要在工作流的构建前阶段拉取私有文章，然后进行构建，并避免敏感消息出现在构建日志等不安全区域，就可以实现用私有仓库保护加密文章。
+
+本文以 Firefly 为例，如果你要参考原始工作流文件，可以在本 fork 的提交历史中找到，当然也可以直接访问 [Firefly](https://github.com/CuteLeaf/Firefly) 找到原始工作流文件。
+
+::github{repo="CuteLeaf/Firefly"}
+
+本文将实现以下目标：
 
 - 公开仓库只保存博客代码、公开文章和部署配置。
 - 私有仓库保存受保护文章、图片以及文章密码。
@@ -56,9 +63,9 @@ Astro 静态博客可以在构建阶段加密文章正文，并在浏览器中�
    - 私有仓库：
      - `BLOG_DEPLOY_TOKEN`：**读/写** 私有仓库的PAT令牌。仓库机密。
 5. [[#配置 Cloudflare 与 EdgeOne Deploy Hook|配置 CF Workers Hook 与 EdgeOne Webhook 以启用相关部署]]
-6. 注意启用 `HTTPS` 以支持文章解密，否则一直“密码错误”。
+6. 注意启用 `HTTPS` 以支持文章解密，否则一直提示“密码错误”。
 
-## 前情提要
+## 原始方案
 
 最开始我使用 Github Action 分别完成 Github Pages、Cloudflare Workers 和 EdgeOne Markers（原 Pages）。并在 Actions 流程中签出私有仓库的文章内容并构建，最后通过 Wrangler CLI 和 EdgeOne Cl 直接命令行部署。怎么说呢，可以是可以，但是有那么几个不是那么大的大问题：
 
@@ -68,7 +75,7 @@ Astro 静态博客可以在构建阶段加密文章正文，并在浏览器中�
 
 当然也带来了一个问题：私有仓库推送需要手动配置部署平台的部署钩子（Webhook），但相比复杂的 API Token，Webhook 只有一个 URL，配置起来更简单，调用也简单。
 
-如果你仍然想使用上述分工作流的方案，请尝试在本fork内执行：
+如果你仍然想使用上述分工作流的方案，请尝试在本 fork 内执行：
 
 ```bash
 git checkout d7f75955f2928333f786e3a45671d80aa130cb0b
@@ -76,7 +83,7 @@ git checkout d7f75955f2928333f786e3a45671d80aa130cb0b
 
 然后就能找到部署到 CF Workers 的工作流文件，EdgeOne 的工作流文件类似，这里不再提供 ~~（其实本来写了但是还没来得及提交和推送就改变主意了）~~。
 
-## 最终架构
+## 最终流程
 
 完成后的处理流程如下：
 
@@ -104,6 +111,8 @@ git checkout d7f75955f2928333f786e3a45671d80aa130cb0b
 ```
 
 这里最重要的变化是：**获取私有内容不再分散写在每个部署工作流中，而是成为 `pnpm build` 的统一前置步骤。** 因此，无论由哪个平台执行构建，只要提供相同的环境变量，就能得到包含私有文章的完整站点。
+
+以下开始介绍详细的配置步骤。
 
 ## 创建私有内容仓库
 
@@ -201,7 +210,7 @@ rsync -a --delete "$source_dir/" src/content/posts/
 
 为了避免私有文件覆盖公开文章，两个仓库中不要使用相同的相对路径或 slug。
 
-## 让所有构建自动获取私有文章
+## 构建时自动获取私有文章
 
 在 `package.json` 中增加独立脚本：
 
@@ -322,7 +331,7 @@ Firefly 自带了 `wrangler.jsonc` 不用自己编写，只需遵照文档填写
 }
 ```
 
-## 让私有文章更新自动触发公共仓库工作流部署
+## 让私有文章更新自动触发部署工作流
 
 仅修改私有仓库不会自动触发公开仓库的工作流，因此要在私有仓库创建 `.github/workflows/notify-blog.yml`。
 
@@ -438,7 +447,7 @@ BLOG_DEPLOY_TOKEN
 
 该令牌用于向目标博客仓库创建事件，注意：该 PAT 令牌需要对公共仓库有 **读/写** 的权限，因为创建事件为“写”操作。另外，Deploy Key 只适用于 Git over SSH，不能替代 GitHub REST API 的认证令牌。
 
-## 配置 Cloudflare 与 EdgeOne Deploy Hook
+## 配置平台部署触发器
 
 如果 Cloudflare 或 EdgeOne 项目由平台自己的 Git 集成负责构建，也可以在私有仓库更新后额外调用 Deploy Hook。
 
