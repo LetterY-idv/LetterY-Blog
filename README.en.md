@@ -32,7 +32,7 @@
 🚀 Quick Guide:
 [**🖥️Live Demo**](https://firefly.cuteleaf.cn/) /
 [**📝Documentation**](https://docs-firefly.cuteleaf.cn/) /
-[**🍀My Blog**](https://blog.cuteleaf.cn)
+[**🍀My Blog**](https://lettery.cc.cd)
 
 ⚡ Static Site Generation: Ultra-fast loading speed and SEO optimization based on Astro
 

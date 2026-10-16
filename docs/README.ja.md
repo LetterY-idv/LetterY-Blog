@@ -33,7 +33,7 @@
 🚀 クイックガイド：
 [**🖥️ライブデモ**](https://firefly.cuteleaf.cn/) /
 [**📝ドキュメント**](https://docs-firefly.cuteleaf.cn/) /
-[**🍀私のブログ**](https://blog.cuteleaf.cn)
+[**🍀私のブログ**](https://lettery.cc.cd)
 
 ⚡ 静的サイト生成：Astro ベースの超高速読み込み速度と SEO 最適化
 

@@ -32,7 +32,7 @@
 🚀 빠른 안내:
 [**🖥️온라인 데모**](https://firefly.cuteleaf.cn/) /
 [**📝문서**](https://docs-firefly.cuteleaf.cn/) /
-[**🍀내 블로그**](https://blog.cuteleaf.cn)
+[**🍀내 블로그**](https://lettery.cc.cd)
 
 ⚡ 정적 사이트 생성: Astro 기반의 매우 빠른 로딩 속도와 SEO 최적화
 

@@ -33,7 +33,7 @@
 🚀 快速指南：
 [**🖥️在线预览**](https://firefly.cuteleaf.cn/) /
 [**📝使用文档**](https://docs-firefly.cuteleaf.cn/) /
-[**🍀我的博客**](https://blog.cuteleaf.cn) 
+[**🍀我的博客**](https://lettery.cc.cd) 
 
 ⚡ 静态站点生成: 基于 Astro 的超快加载速度和 SEO 优化
 
