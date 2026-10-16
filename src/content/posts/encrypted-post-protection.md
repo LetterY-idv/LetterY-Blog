@@ -53,7 +53,7 @@ slug: encrypted-post-protection
    ```
 
    `posts/` 的内部结构应与公开博客的 `src/content/posts/` 保持一致。构建时会把它递归合并到公开文章目录。其中的文章也要保持与公开文章的头部格式一致。
-3. 在 [[#让私有文章更新自动触发公共仓库工作流部署|这里]] 找到 notify-blog.yml，并部署到私有仓库的 `.github/workflows`。
+3. 在 [[#让私有文章更新自动触发部署工作流|这里]] 找到 notify-blog.yml，并部署到私有仓库的 `.github/workflows`。
 4. 配置仓库变量与机密：
    - 公共仓库：
      - `PRIVATE_CONTENT_REPOSITORY`：仓库名，例如 `Your-Account-Name/Your-Blog-Private`。
@@ -62,7 +62,7 @@ slug: encrypted-post-protection
      - `PRIVATE_CONTENT_TOKEN`：读取私有仓库的PAT令牌。仓库机密。
    - 私有仓库：
      - `BLOG_DEPLOY_TOKEN`：**读/写** 私有仓库的PAT令牌。仓库机密。
-5. [[#配置 Cloudflare 与 EdgeOne Deploy Hook|配置 CF Workers Hook 与 EdgeOne Webhook 以启用相关部署]]
+5. [[#配置平台部署触发器|配置 CF Workers Hook 与 EdgeOne Webhook 以自动触发相关部署]]
 6. 注意启用 `HTTPS` 以支持文章解密，否则一直提示“密码错误”。
 
 ## 原始方案
