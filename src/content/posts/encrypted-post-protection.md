@@ -2,7 +2,7 @@
 title: '使用私有仓库保护 Astro 加密文章并实现自动部署'
 description: '从仓库拆分、构建前置脚本到 GitHub Actions 通知，完整实现私有加密文章的自动获取、构建与多平台部署。'
 published: 2026-10-01
-updated: 2026-10-11
+updated: 2026-10-17
 tags:
   - Astro
   - GitHub Actions
@@ -27,6 +27,10 @@ slug: encrypted-post-protection
 
 ::github{repo="CuteLeaf/Firefly"}
 
+相关文件都能在本站的 Github 仓库中找到
+
+::github{repo="LetterY-idv/LetterY-Blog"}
+
 本文将实现以下目标：
 
 - 公开仓库只保存博客代码、公开文章和部署配置。
@@ -38,8 +42,12 @@ slug: encrypted-post-protection
 
 ## 省流
 
-1. 在 [此处](https://gitee.com/LetterY-idv/LetterY-Blog/blob/master/.github/workflows/deploy.yml) 获取新的 deploy.yml 工作流文件，并替换掉公共仓库内的相应文件。
-2. 新建一个私有仓库，例如：
+请参照如下步骤来对你的网站增加该功能：
+
+1. 在 [Gitee](https://gitee.com/LetterY-idv/LetterY-Blog/blob/master/.github/workflows/deploy.yml) 获取新的 deploy.yml 工作流文件，并替换掉公共仓库内的相应文件。
+2. 在 [Gitee](https://gitee.com/LetterY-idv/LetterY-Blog/blob/master/scripts/fetch-private-content.ts) 获取构建时自动获取私有仓库内容的脚本，并放在 `scripts/fetch-private-content.ts`。
+3. 参照 [[#构建时自动获取私有文章]] 内容修改 `package.json`。
+4. 新建一个私有仓库，例如：
 
    ```text
    Your-Blog-Private/
@@ -53,8 +61,8 @@ slug: encrypted-post-protection
    ```
 
    `posts/` 的内部结构应与公开博客的 `src/content/posts/` 保持一致。构建时会把它递归合并到公开文章目录。其中的文章也要保持与公开文章的头部格式一致。
-3. 在 [[#让私有文章更新自动触发部署工作流|这里]] 找到 notify-blog.yml，并部署到私有仓库的 `.github/workflows`。
-4. 配置仓库变量与机密：
+5. 在 [[#让私有文章更新自动触发部署工作流]] 找到 notify-blog.yml，并部署到私有仓库的 `.github/workflows`。
+6. 配置仓库变量与机密：
    - 公共仓库：
      - `PRIVATE_CONTENT_REPOSITORY`：仓库名，例如 `Your-Account-Name/Your-Blog-Private`。
      - `PRIVATE_CONTENT_REF`：分支名，未设置时使用 `master`。
@@ -62,8 +70,8 @@ slug: encrypted-post-protection
      - `PRIVATE_CONTENT_TOKEN`：读取私有仓库的PAT令牌。仓库机密。
    - 私有仓库：
      - `BLOG_DEPLOY_TOKEN`：**读/写** 私有仓库的PAT令牌。仓库机密。
-5. [[#配置平台部署触发器|配置 CF Workers Hook 与 EdgeOne Webhook 以自动触发相关部署]]
-6. 注意启用 `HTTPS` 以支持文章解密，否则一直提示“密码错误”。
+7. [[#配置平台部署触发器|配置 CF Workers Hook 与 EdgeOne Webhook 以自动触发相关部署。]]
+8. 注意启用 `HTTPS` 以支持文章解密，否则一直提示“密码错误”。
 
 ## 原始方案
 

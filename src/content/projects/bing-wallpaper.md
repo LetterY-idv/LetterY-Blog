@@ -1,8 +1,8 @@
 ---
-title: '📸 Bing Wallpaper Archive'
-published: 2026-10-16
+title: '📸 Bing 每日壁纸'
+published: 2026-10-17
 description: '必应每日壁纸归档及图片 API，自动更新，并可部署到 Cloudflare Workers'
-image: ''
+image: './images/bing-wallpaper.png'
 tags: []
 status: 'published'
 draft: false
@@ -15,6 +15,8 @@ link:
 ---
 
 本项目归档 2016-03-05 至今的必应每日壁纸数据，并提供 Cloudflare Workers 网站、JSON API、图片直链接口和批量下载能力。
+
+示例站点：<https://bw.lettery.cc.cd>
 
 ## 🚀 功能特色
 
@@ -124,7 +126,7 @@ pnpm dev --port 8788
 
 **GitHub：**
 
-```
+```text
 # 全量数据
 https://raw.githubusercontent.com/LetterY-idv/Bing-Wallpaper/master/Bing_zh-CN_all.json
 
@@ -138,7 +140,7 @@ https://raw.githubusercontent.com/LetterY-idv/Bing-Wallpaper/master/2025/all.jso
 
 **jsdelivr：**
 
-```
+```text
 # 全量数据 cdn加速
 https://cdn.jsdelivr.net/gh/LetterY-idv/Bing-Wallpaper/Bing_zh-CN_all.json
 # 如果cdn不是最新数据，建议使用下面链接重置
@@ -154,7 +156,7 @@ https://cdn.jsdelivr.net/gh/LetterY-idv/Bing-Wallpaper/2025/all.json
 
 **CloudFlare API：**
 
-```
+```text
 https://<你的域名>/api-doc/
 ```
 
