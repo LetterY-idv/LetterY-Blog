@@ -57,6 +57,7 @@ jobs:
         uses: actions/upload-pages-artifact@v5
         with:
           path: dist  # Astro默认构建输出目录
+          include-hidden-files: true  # Keep .nojekyll (excluded by default since v4)
 
   deploy:
     environment:
