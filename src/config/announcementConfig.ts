@@ -5,7 +5,7 @@ export const announcementConfig: AnnouncementConfig = {
 	title: "",
 
 	// 公告内容
-	content: "欢迎来到本站！可能未注明的情况下使用AI生成的内容。",
+	content: "欢迎来到本站！本站点正在迁移装修中...",
 
 	// 是否允许用户关闭公告
 	closable: true,
