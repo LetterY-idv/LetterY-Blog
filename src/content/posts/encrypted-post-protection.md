@@ -13,36 +13,19 @@ tags:
 image: './images/astro-logo-dark.png'
 category: '技术'
 slug: encrypted-post-protection
+series: 'Astro 站点内容安全保护'
+seriesOrder: 1
 ---
 
 由于 Github 上的许多静态博客框架的主题都是通过 fork 的形式使用的，而 fork 又只能是公开仓库，所以纵然你的框架有文章加密功能（比如 Astro），也能在 Github 文章仓库内找到原始内容。与此同时，fork 的上游跟踪功能又不是完全没用（虽然你可以用手动添加 git 上游的方式跟踪，但是 Github 上的 fork 上游跟踪更为直观，也更为方便。
 
-## 思路
+如果你想同时实现加密相册的保护，可以看这篇文章：
 
-加密文章正文是 Astro 在构建阶段完成的，在浏览器中纯前端解密。部署产物虽然只包含密文，但如果文章源文件和密码仍保存在公开仓库中，任何人都可以直接查看仓库并获得明文。
-
-所以，只要在工作流的构建前阶段拉取私有文章，然后进行构建，并避免敏感消息出现在构建日志等不安全区域，就可以实现用私有仓库保护加密文章。
-
-本文以 Firefly 为例，如果你要参考原始工作流文件，可以在本 fork 的提交历史中找到，当然也可以直接访问 [Firefly](https://github.com/CuteLeaf/Firefly) 找到原始工作流文件。
-
-::github{repo="CuteLeaf/Firefly"}
-
-相关文件都能在本站的 Github 仓库中找到
-
-::github{repo="LetterY-idv/LetterY-Blog"}
-
-本文将实现以下目标：
-
-- 公开仓库只保存博客代码、公开文章和部署配置。
-- 私有仓库保存受保护文章、图片以及文章密码。
-- 执行 `pnpm build` 时自动获取并合并私有文章。
-- 私有文章更新后自动通知公开博客仓库重新构建。
-- 同一套内容可部署到 GitHub Pages、Cloudflare Workers 和 EdgeOne，当然你也可以连接到其它更多的平台（可能需要一些小小的修改）。
-- 本地未配置私有仓库时仍可正常开发和构建公开内容。
+[[encrypted-gallery-protection]]
 
 ## 省流
 
-请参照如下步骤来对你的网站增加该功能：
+步骤如下：
 
 1. 在 [Gitee](https://gitee.com/LetterY-idv/LetterY-Blog/blob/master/.github/workflows/deploy.yml) 获取新的 deploy.yml 工作流文件，并替换掉公共仓库内的相应文件。
 2. 在 [Gitee](https://gitee.com/LetterY-idv/LetterY-Blog/blob/master/scripts/fetch-private-content.ts) 获取构建时自动获取私有仓库内容的脚本，并放在 `scripts/fetch-private-content.ts`。
@@ -72,6 +55,29 @@ slug: encrypted-post-protection
      - `BLOG_DEPLOY_TOKEN`：**读/写** 私有仓库的PAT令牌。仓库机密。
 7. [[#配置平台部署触发器|配置 CF Workers Hook 与 EdgeOne Webhook 以自动触发相关部署。]]
 8. 注意启用 `HTTPS` 以支持文章解密，否则一直提示“密码错误”。
+
+## 思路
+
+加密文章正文是 Astro 在构建阶段完成的，在浏览器中纯前端解密。部署产物虽然只包含密文，但如果文章源文件和密码仍保存在公开仓库中，任何人都可以直接查看仓库并获得明文。
+
+所以，只要在工作流的构建前阶段拉取私有文章，然后进行构建，并避免敏感消息出现在构建日志等不安全区域，就可以实现用私有仓库保护加密文章。
+
+本文以 Firefly 为例，如果你要参考原始工作流文件，可以在本 fork 的提交历史中找到，当然也可以直接访问 [Firefly](https://github.com/CuteLeaf/Firefly) 找到原始工作流文件。
+
+::github{repo="CuteLeaf/Firefly"}
+
+相关文件都能在本站的 Github 仓库中找到
+
+::github{repo="LetterY-idv/LetterY-Blog"}
+
+本文将实现以下目标：
+
+- 公开仓库只保存博客代码、公开文章和部署配置。
+- 私有仓库保存受保护文章、图片以及文章密码。
+- 执行 `pnpm build` 时自动获取并合并私有文章。
+- 私有文章更新后自动通知公开博客仓库重新构建。
+- 同一套内容可部署到 GitHub Pages、Cloudflare Workers 和 EdgeOne，当然你也可以连接到其它更多的平台（可能需要一些小小的修改）。
+- 本地未配置私有仓库时仍可正常开发和构建公开内容。
 
 ## 原始方案
 
