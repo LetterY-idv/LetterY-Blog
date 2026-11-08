@@ -48,6 +48,7 @@ jobs:
           PRIVATE_CONTENT_REPOSITORY: ${{ vars.PRIVATE_CONTENT_REPOSITORY }}
           PRIVATE_CONTENT_REF: ${{ vars.PRIVATE_CONTENT_REF }}
           PRIVATE_CONTENT_PATH: ${{ vars.PRIVATE_CONTENT_PATH }}
+          PRIVATE_GALLERY_PATH: ${{ vars.PRIVATE_GALLERY_PATH }}
           PRIVATE_CONTENT_TOKEN: ${{ secrets.PRIVATE_CONTENT_TOKEN }}
 
       - name: Create .nojekyll file

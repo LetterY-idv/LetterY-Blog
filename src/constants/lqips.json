@@ -1,9 +1,13 @@
 {
   "public:gallery/firefly-2026/cover.avif": "7588a28a8f989e8d88",
   "public:gallery/firefly-2026/1.avif": "c8bca9dde6d2babfb5",
-  "public:assets/images/avatar.png": "a7afaea8b0af78897a",
   "src:content/posts/images/steve-jobs.jpg": "c2a59e7d796e866e56",
   "src:content/posts/images/lettery-cover.png": "e7eaede3e6e9e6e9eb",
   "src:content/projects/images/mpv-screenshot.png": "3e3e3f2525262b2b2c",
-  "src:assets/images/logo/logo.png": "e0e1e4dadcdfdfe1e4"
+  "src:assets/images/logo/logo.png": "e0e1e4dadcdfdfe1e4",
+  "src:assets/images/avatar.png": "a7afaea8b0af78897a",
+  "src:content/projects/images/bing-wallpaper.png": "22406d1e395a1c3d63",
+  "src:content/posts/images/astro-logo-dark.png": "cccdced4d4d5dcdbdc",
+  "src:assets/images/logo/lettery-light.png": "000000000000000000",
+  "src:assets/images/logo/lettery-dark.png": "ffffffffffffffffff"
 }

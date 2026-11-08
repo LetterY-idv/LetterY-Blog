@@ -1,4 +1,12 @@
-import { cp, mkdtemp, rm, stat } from "node:fs/promises";
+import {
+	cp,
+	mkdtemp,
+	readFile,
+	readdir,
+	rm,
+	stat,
+	writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 import { spawn } from "node:child_process";
@@ -6,8 +14,13 @@ import { spawn } from "node:child_process";
 const repository = process.env.PRIVATE_CONTENT_REPOSITORY?.trim();
 const ref = process.env.PRIVATE_CONTENT_REF?.trim() || "master";
 const contentPath = process.env.PRIVATE_CONTENT_PATH?.trim() || "posts";
+const galleryPath = process.env.PRIVATE_GALLERY_PATH?.trim() || "gallery";
 const token = process.env.PRIVATE_CONTENT_TOKEN?.trim();
 const destination = resolve("src/content/posts");
+const galleryDestination = resolve("public/gallery");
+const galleryConfigDestination = resolve(
+	"src/config/privateGalleryConfig.generated.ts",
+);
 
 function run(
 	command: string,
@@ -75,6 +88,42 @@ try {
 	console.log(
 		`[PRIVATE-CONTENT] Merged ${contentPath} into src/content/posts.`,
 	);
+
+	const privateGalleryRoot = resolve(checkoutDir, galleryPath);
+	const privateGalleryStat = await stat(privateGalleryRoot).catch(
+		() => undefined,
+	);
+	if (privateGalleryStat?.isDirectory()) {
+		const galleryEntries = await readdir(privateGalleryRoot, {
+			withFileTypes: true,
+		});
+		for (const entry of galleryEntries) {
+			if (!entry.isDirectory()) continue;
+
+			await cp(
+				resolve(privateGalleryRoot, entry.name),
+				resolve(galleryDestination, entry.name),
+				{ recursive: true, force: true },
+			);
+		}
+
+		const configSource = resolve(privateGalleryRoot, "galleryConfig.json");
+		const configStat = await stat(configSource).catch(() => undefined);
+		if (configStat?.isFile()) {
+			const albums = JSON.parse(await readFile(configSource, "utf8"));
+			if (!Array.isArray(albums)) {
+				throw new Error(
+					"Private gallery config must contain an array of albums.",
+				);
+			}
+			await writeFile(
+				galleryConfigDestination,
+				`import type { GalleryAlbum } from "@/types/galleryConfig";\n\nexport const privateGalleryAlbums: GalleryAlbum[] = ${JSON.stringify(albums, null, "\t")};\n`,
+			);
+		}
+
+		console.log(`[PRIVATE-CONTENT] Merged ${galleryPath} into the gallery.`);
+	}
 } finally {
 	await rm(worktree, { recursive: true, force: true });
 }
