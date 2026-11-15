@@ -11,99 +11,64 @@ tags:
 category: '技术'
 image: './images/astro-logo-dark.png'
 slug: encrypted-gallery-protection
-series: 'Astro 站点内容安全保护'
+series: '静态站点内容安全保护'
 seriesOrder: 2
 ---
 
-本文在是在完成加密文章保护的基础上进行的，如果没有完成，请先阅读：
+静态博客通常在构建时加密相册，再由浏览器解密。不过，页面上的密码框保护不了公开仓库里的源文件。如果相册配置、密码和图片列表仍提交在公开仓库中，别人依然可以直接查看。
+
+做法是把受保护相册放进私有仓库，等到构建前再复制图片并生成配置。部署部分沿用上一篇文章的设置，因此请先完成其中的前置步骤：
 
 [[encrypted-post-protection]]
 
-静态博客的相册加密通常发生在构建阶段。浏览器最终拿到的页面可以只包含密文，但如果相册配置、访问密码和图片列表仍然保存在公开仓库中，任何人都可以绕过前端密码框，直接查看仓库获得原始内容。
+## 省流优先
 
-因此，本次改造沿用了加密文章的保护思路：公开仓库继续保存博客框架和普通相册，受保护相册则迁移到私有仓库。构建开始前，由统一脚本临时读取私有仓库，将相册资源复制到 `public/gallery`，并根据私有 JSON 配置生成 TypeScript 配置文件。
+1. 完成 [[encrypted-post-protection]] 中的构建与部署配置。
+2. 确认获取脚本会复制私有相册，并将 `privateGalleryAlbums` 合并到相册配置。
+3. 按 [[#整理私有仓库]] 的结构，将图片和 `galleryConfig.json` 放入私有仓库的 `gallery/`。
+4. 在构建环境中设置 `PRIVATE_GALLERY_PATH=gallery`，并传入已有的私有仓库变量和令牌。
+5. 通知工作流若设有路径过滤，将 `gallery/**` 加入监听列表；没有设置则无需修改。
+6. 运行 `pnpm run build`，并通过 HTTPS 检查相册。
 
-## 省流
+## 检查博客仓库
 
-步骤如下：
+完成文章保护配置后，再确认博客仓库包含以下私有相册支持：
 
-1. 在 [Gitee](https://gitee.com/LetterY-idv/LetterY-Blog/blob/master/.github/workflows/deploy.yml) 获取新的 deploy.yml 工作流文件，并替换掉公共仓库内的相应文件。
-2. 在 [Gitee](https://gitee.com/LetterY-idv/LetterY-Blog/blob/master/scripts/fetch-private-content.ts) 获取新的脚本文件 `scripts/fetch-private-content.ts`。
-3. 在 [Gitee](https://gitee.com/LetterY-idv/LetterY-Blog/blob/master/src/config/privateGalleryConfig.generated.ts) 获取新的配置文件，并放在 `src/config/privateGalleryConfig.generated.ts`。
-4. 在私有仓库中新建 `gallery` 部分，结构大致如下：
+- [`scripts/fetch-private-content.ts`](https://github.com/LetterY-idv/LetterY-Blog/blob/master/scripts/fetch-private-content.ts) 会复制私有相册资源，并根据 `galleryConfig.json` 生成配置。
+- [`src/config/privateGalleryConfig.generated.ts`](https://github.com/LetterY-idv/LetterY-Blog/blob/master/src/config/privateGalleryConfig.generated.ts) 是构建时生成配置的初始文件。
+- [`src/config/galleryConfig.ts`](https://github.com/LetterY-idv/LetterY-Blog/blob/master/src/config/galleryConfig.ts) 会把 `privateGalleryAlbums` 合并到公开相册列表。
 
-   ```text
-   gallery/
-   ├── galleryConfig.json
-   └── encrypted-test/
-       └── urls.txt
-   ```
+当前仓库已包含这些改动。若你使用的是较早版本，请先同步相关文件，并确认 `package.json` 的 `build` 命令会先运行 `pnpm prepare:private-content`。
 
-   以后新增相册时，只需要增加一个相册目录，并在 `galleryConfig.json` 中增加对应配置。
-5. 把加密相册的 `urls.txt` 或图片迁移进私有仓库的 `gallery/相册ID` 目录中。
-6. 参见 [[#配置私有相册元数据]] 将公有仓库的 `src/config/galleryConfig.ts` 中的 **加密相册相关部分相册信息** 迁移到私有仓库的 `gallery/galleryConfig.json` 中。
-7. 在公开仓库的 Actions variables 中添加 `PRIVATE_GALLERY_PATH=gallery`。
-8. 确认 Actions secrets 中已经配置可读取私有仓库的 `PRIVATE_CONTENT_TOKEN`。
-9. 推送代码并重新部署，构建脚本会自动复制相册并生成配置。
+## 整理私有仓库
 
-## 思路
-
-公开仓库只保留以下内容：
-
-- 相册页面和加密组件
-- 普通公开相册
-- 私有相册配置的空白生成文件
-- 构建前获取私有内容的脚本
-
-私有仓库保存：
-
-- 受保护相册的图片或 `urls.txt`
-- 相册名称、描述、标签和日期
-- `password` 与 `passwordHint`
-
-构建时的处理顺序为：
-
-1. 使用只读令牌检出私有仓库。
-2. 将私有相册目录复制到 `public/gallery`。
-3. 读取 `gallery/galleryConfig.json`。
-4. 生成 `src/config/privateGalleryConfig.generated.ts`。
-5. 合并公开和私有相册配置。
-6. 执行 Astro 构建，由加密组件生成浏览器端需要的密文。
-
-## 调整私有仓库目录
-
-私有仓库中的相册目录采用以下结构：
+在私有仓库中按以下结构存放文件：
 
 ```text
-gallery/
-├── galleryConfig.json
-└── encrypted-test/
-    └── urls.txt
+├── posts/
+└── gallery/
+    ├── galleryConfig.json
+    └── encrypted-test/
+        └── urls.txt
 ```
 
-相册目录名必须与配置中的 `id` 一致。例如 `id` 为 `encrypted-test` 时，对应资源应放在 `gallery/encrypted-test` 中。
+获取脚本也会检查文章目录是否存在。因此，即使私有仓库只存相册，也要保留 `posts/` 目录。完成文章保护配置后，这个目录通常已经存在。
 
-`urls.txt` 每行保存一个图片地址：
+每个相册都要有自己的子目录，目录名必须与配置中的 `id` 一致。图片可以直接放在目录里；如果使用 `urls.txt`，每行填写一个图片地址：
 
 ```text
-# 每行一个图片 URL，支持 jpg/png/webp/avif/gif 后缀
-# # 号开头的行为注释，空行会被忽略
 https://example.com/photo-01.webp
 https://example.com/photo-02.jpg
 ```
 
-如果图片本身也需要隐藏，就不应使用可公开访问的固定外链。公开图床只能隐藏相册入口和配置，不能阻止知道原始 URL 的人直接访问图片。
-
-## 配置私有相册元数据
-
-在私有仓库的 `gallery/galleryConfig.json` 中保存受保护相册配置：
+然后在 `gallery/galleryConfig.json` 中填写受保护相册的元数据：
 
 ```json
 [
   {
     "id": "encrypted-test",
     "name": "加密相册示例",
-    "description": "只有输入正确密码才能查看的相册。",
+    "description": "需要输入密码才能查看。",
     "location": "示例地点",
     "date": "2026-02-01",
     "tags": ["加密相册", "示例"],
@@ -113,123 +78,60 @@ https://example.com/photo-02.jpg
 ]
 ```
 
-不要使用示例密码或容易猜测的短密码。由于解密发生在浏览器中，这种方案适合家庭照片、活动记录等低到中等敏感内容，不适合身份证件、财务资料或其他高敏感文件。
+将受保护相册的配置从公开仓库的 `src/config/galleryConfig.ts` 移到这个 JSON 文件中，公开配置里只保留公开相册。
 
-## 在构建前复制私有相册
+如果图片本身也需要保密，就不要使用任何人都能访问的固定外链。公开图床的 URL 一旦泄露，密码页无法阻止他人直接打开图片。
 
-统一的 `scripts/fetch-private-content.ts` 除了合并私有文章，还会读取 `PRIVATE_GALLERY_PATH`。默认值为 `gallery`。
+## 配置构建环境
 
-脚本遍历私有相册根目录下的子目录，并复制到公开项目的 `public/gallery`：
-
-```ts
-const galleryEntries = await readdir(privateGalleryRoot, {
-  withFileTypes: true,
-});
-
-for (const entry of galleryEntries) {
-  if (!entry.isDirectory()) continue;
-
-  await cp(
-    resolve(privateGalleryRoot, entry.name),
-    resolve(galleryDestination, entry.name),
-    { recursive: true, force: true },
-  );
-}
-```
-
-这种写法不依赖固定的 `albums` 中间目录。私有仓库新增相册时，只需要增加同级目录，不必修改复制逻辑。
-
-## 生成私有相册配置
-
-构建脚本读取 `galleryConfig.json`，验证顶层结构为数组，然后生成 TypeScript 文件：
-
-```ts
-const albums = JSON.parse(await readFile(configSource, "utf8"));
-
-if (!Array.isArray(albums)) {
-  throw new Error("Private gallery config must contain an array of albums.");
-}
-
-await writeFile(
-  galleryConfigDestination,
-  `import type { GalleryAlbum } from "@/types/galleryConfig";\n\nexport const privateGalleryAlbums: GalleryAlbum[] = ${JSON.stringify(albums, null, "\t")};\n`,
-);
-```
-
-公开仓库中的 `galleryConfig.ts` 只负责合并配置：
-
-```ts
-import type { GalleryConfig } from "@/types/galleryConfig";
-import { privateGalleryAlbums } from "./privateGalleryConfig.generated";
-
-export const galleryConfig: GalleryConfig = {
-  albums: [
-    // 公开相册
-    ...privateGalleryAlbums,
-  ],
-};
-```
-
-这样，密码和私有相册元数据不会直接出现在公开仓库的手写配置中。
-
-## 配置 GitHub Actions
-
-在公开博客仓库的 Actions variables 中配置：
+在公开博客仓库的 Actions **Variables** 中添加：
 
 ```text
-PRIVATE_CONTENT_REPOSITORY=Your-Account-Name/Your-Blog-Private
-PRIVATE_CONTENT_REF=master
-PRIVATE_CONTENT_PATH=posts
 PRIVATE_GALLERY_PATH=gallery
 ```
 
-在 Actions secrets 中配置：
+构建环境还需要文章保护配置中的 `PRIVATE_CONTENT_REPOSITORY`、`PRIVATE_CONTENT_REF`、`PRIVATE_CONTENT_PATH` 和 `PRIVATE_CONTENT_TOKEN`。请把前三项设为 **Variables**，把令牌设为 **Secrets**，并只授予读取私有仓库所需的权限。记得将这些值传给实际执行 `pnpm run build` 的步骤；如果使用 Cloudflare Workers 或 EdgeOne，也要在相应的构建环境中配置。
 
-```text
-PRIVATE_CONTENT_TOKEN
-```
+脚本默认从 `gallery/` 读取相册。只有使用了其他目录名时，才需要调整 `PRIVATE_GALLERY_PATH`。
 
-构建步骤需要注入这些变量：
+## 让相册更新触发部署
+
+如果通知工作流没有设置 `paths` 过滤规则，符合工作流分支条件的推送都会触发通知，无需修改。
+
+只有在工作流设置了路径过滤时，才需要把 `gallery/**` 加进列表。例如，若当前只监听文章：
 
 ```yaml
-- name: Build site
-  run: pnpm run build
-  env:
-    PRIVATE_CONTENT_REPOSITORY: ${{ vars.PRIVATE_CONTENT_REPOSITORY }}
-    PRIVATE_CONTENT_REF: ${{ vars.PRIVATE_CONTENT_REF }}
-    PRIVATE_CONTENT_PATH: ${{ vars.PRIVATE_CONTENT_PATH }}
-    PRIVATE_GALLERY_PATH: ${{ vars.PRIVATE_GALLERY_PATH }}
-    PRIVATE_CONTENT_TOKEN: ${{ secrets.PRIVATE_CONTENT_TOKEN }}
+paths:
+  - 'posts/**'
 ```
 
-令牌应遵循最小权限原则，只授予读取目标私有仓库所需的权限。不要把令牌写入 Git URL、仓库文件或构建日志。
+改为：
 
-## 本地开发方式
+```yaml
+paths:
+  - 'posts/**'
+  - 'gallery/**'
+```
 
-本地未设置 `PRIVATE_CONTENT_REPOSITORY` 时，获取脚本会跳过私有内容，普通公开相册仍可正常开发。
+这样，文章或相册更新都会触发通知。令牌、事件名称和部署触发方式继续使用 [[encrypted-post-protection]] 中的配置，不必重复设置。
 
-需要预览私有相册时，可以通过本地环境变量指定私有仓库和令牌，再执行统一构建命令：
+## 本地预览与验证
+
+没有设置 `PRIVATE_CONTENT_REPOSITORY` 时，脚本会跳过私有内容，公开相册照常可用。要在本地预览私有相册，请先设置私有仓库相关环境变量和令牌，再运行：
 
 ```bash
 pnpm run build
 ```
 
-不要把包含令牌的环境文件提交到 Git。构建结束后，也应检查 `public/gallery` 和生成的配置文件是否被 `.gitignore` 正确排除，避免误提交私有内容。
+检查私有相册是否已复制到 `public/gallery/`、生成的配置是否包含对应相册，并确认公开相册仍然存在。测试结束后，不要把私有图片、生成的配置文件或含令牌的环境文件提交到公开仓库。
+
+部署后通过 HTTPS 打开相册，确认可以用密码解锁，图片也能正常显示。
 
 ## 安全边界
 
-本次改造解决的是公开仓库泄露明文配置和相册清单的问题，但它并不等同于服务器端鉴权。
+这套方案能避免把受保护相册的配置和图片清单提交到公开仓库，但不等于服务端鉴权：
 
-需要特别注意：
-
-- 浏览器端解密意味着访问者会在成功解锁后获得明文内容。
-- 静态站点无法撤销已经被访问者保存的图片。
-- 公共图床地址一旦泄露，密码页无法阻止直接访问。
-- 弱密码可能遭到离线猜测，应使用足够长且不可预测的密码。
-- 高敏感内容应改用 Cloudflare Access、对象存储签名 URL 或带会话鉴权的服务端方案。
-
-## 最终效果
-
-完成改造后，公开仓库仍然可以保留 fork 上游跟踪和自动部署能力，同时不再直接保存受保护相册的配置、密码与图片列表。
-
-私有仓库更新相册后，只需触发公开仓库的部署流程。构建脚本会在 Astro 收集相册内容之前完成复制和配置生成，不需要在不同部署平台的工作流中重复维护相同逻辑。
+- 浏览器解密后，访问者仍可以保存图片；静态站点无法撤销已经下载的内容。
+- 如果图片存放在公开图床，知道图片 URL 的人仍能直接访问。
+- 请使用足够强、难以猜测的密码，并避免在构建日志中输出密码或令牌。
+- 如果需要身份认证、撤销访问，或保护高敏感图片，请改用服务端鉴权或签名 URL。
